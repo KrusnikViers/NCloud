@@ -1,9 +1,10 @@
-from app import cloud
-
+import logging
 import time
 
-try:
-    cloud.initialize()
-    time.sleep(3)
-finally:
-    cloud.cleanup()
+from app.components.cloud import Cloud
+
+
+logging.basicConfig(format='%(asctime)s:%(name)s:%(levelname)s - %(message)s', level=logging.DEBUG)
+with Cloud() as cloud:
+    cloud.set(cloud.SUN_OUT, True)
+    time.sleep(5)
