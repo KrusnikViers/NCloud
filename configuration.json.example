@@ -1,0 +1,5 @@
+{
+  "ipinfo_token": "your_token_from_ipinfo.io",
+  "lat": 1.2345,
+  "lon": 6.789
+}

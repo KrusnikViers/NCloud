@@ -1,9 +1,8 @@
 import argparse
 import json
 import logging
-import pathlib
 import os
-
+import pathlib
 
 _ROOT_DIR = pathlib.Path(os.path.realpath(__file__)).parent.parent.parent
 
@@ -11,6 +10,7 @@ _ROOT_DIR = pathlib.Path(os.path.realpath(__file__)).parent.parent.parent
 class Configuration:
     def __init__(self):
         self.location = None
+        self.ipinfo_token = None
         self.none = None
 
     @classmethod
