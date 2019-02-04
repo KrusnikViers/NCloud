@@ -18,13 +18,17 @@ class Location:
             logging.warning('Location was not initialized, sun informer will be unavailable')
 
     def _load(self, config: Configuration):
-        if config.location:
-            self.latitude, self.longitude = config.location
+        configured_latitude = config.get("location.lat", float)
+        configured_longitude = config.get("location.lon", float)
+        if configured_latitude and configured_longitude:
+            self.latitude = configured_latitude
+            self.longitude = configured_longitude
             self.is_available = True
             logging.info('Location was set from config: {}:{}'.format(self.latitude, self.longitude))
 
-        if not self.is_available and config.ipinfo_token:
-            requested_location = self._request_geolocation(config.ipinfo_token)
+        ipinfo_token = config.get("location.ipinfo_token", str)
+        if not self.is_available and ipinfo_token:
+            requested_location = self._request_geolocation(ipinfo_token)
             if requested_location:
                 self.latitude, self.longitude = requested_location
                 self.is_available = True

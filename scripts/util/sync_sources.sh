@@ -8,4 +8,5 @@ sshpass -p "${3}" ssh "${1}" rm -rf ${2}/app ${2}/scripts
 sshpass -p "${3}" scp -r ${BASEDIR}/app ${REMOTE_PATH}/app
 sshpass -p "${3}" scp -r ${BASEDIR}/scripts ${REMOTE_PATH}/scripts
 sshpass -p "${3}" scp -r ${BASEDIR}/configuration.json ${REMOTE_PATH}
+sshpass -p "${3}" scp -r ${BASEDIR}/requirements.txt ${REMOTE_PATH}
 sshpass -p "${3}" ssh "${1}" tree "${2}"

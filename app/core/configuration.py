@@ -9,37 +9,29 @@ _ROOT_DIR = pathlib.Path(os.path.realpath(__file__)).parent.parent.parent
 
 class Configuration:
     def __init__(self):
-        self.location = None
-        self.ipinfo_token = None
-        self.none = None
+        self.data = {}
 
     @classmethod
     def load(cls):
-        args = cls._get_command_line_arguments()
-        json_config = cls._get_configuration_file_content(args.configuration_file)
+        instance = Configuration()
+        args, overrides = cls._get_command_line_arguments()
+        instance.data = cls._get_configuration_file_content(args.configuration_file)
+        instance._apply_overrides(overrides)
 
-        def maybe_get_value(option_name: str):
-            value = getattr(args, option_name)
-            return value if value else json_config.get(option_name, None)
-
-        instance = cls()
-        instance.location = cls._parse_location(maybe_get_value('lat'), maybe_get_value('lon'))
-        instance.ipinfo_token = maybe_get_value('ipinfo_token')
         return instance
 
+    def get(self, path: str, value_type, default=None):
+        current_dict, last_key = self._resolve_dict(path)
+        if last_key in current_dict:
+            return value_type(current_dict[last_key])
+        return default
+
     @staticmethod
-    def _get_command_line_arguments() -> argparse.Namespace:
+    def _get_command_line_arguments() -> (argparse.Namespace, list):
         parser = argparse.ArgumentParser(description='Informer application for Raspberry Pi.')
         parser.add_argument('--configuration-file', '-c', type=str, default=str(_ROOT_DIR) + '/configuration.json',
                             dest='configuration_file', help='Json-formatted file with configuration.')
-        parser.add_argument('--latitude', '-lat', type=float, dest='lat', help='Latitude for sun informer.')
-        parser.add_argument('--longitude', '-lon', type=float, dest='lon', help='Longitude for sun informer.')
-        parser.add_argument('--ipinfo-token', '-it', type=str, dest='ipinfo_token', help='IPInfo.io token.')
-        return parser.parse_args()
-
-    @staticmethod
-    def _parse_location(lat, lon) -> (float, float):
-        return (float(lat), float(lon)) if lat and lon else None
+        return parser.parse_known_args()
 
     @staticmethod
     def _get_configuration_file_content(configuration_file_path: str) -> dict:
@@ -49,3 +41,19 @@ class Configuration:
                 return json.load(configuration_file)
         logging.info('Configuration file is missing, using only command line parameters.')
         return {}
+
+    def _resolve_dict(self, path: str) -> (dict, str):
+        key_sequence = path.split('.')
+        last_key = key_sequence[-1]
+        current_dict = self.data
+        for key in key_sequence[:-1]:
+            if key not in current_dict:
+                current_dict[key] = dict()
+            current_dict = current_dict[key]
+        return current_dict, last_key
+
+    def _apply_overrides(self, overrides: list):
+        for override in overrides:
+            key, value = override.split('=')
+            current_dict, last_key = self._resolve_dict(key)
+            current_dict[last_key] = value
