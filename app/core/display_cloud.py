@@ -3,7 +3,7 @@ import logging
 from RPi import GPIO as gpio
 
 
-class Cloud:
+class DisplayCloud:
     # Constants for actual pins. Pins are numbered in sections row by row from top, from left to right.
     SUN_OUT = [16, 19, 13]
     CLOUD_OUT = [18,
