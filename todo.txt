@@ -1,0 +1,9 @@
+EMail informer
+Move handlers to another file
+Move multiprocess logic to another file
+Autotesting
+Sun informer
+Docker packaging
+Control from buttons
+VK informer
+Telegram informer

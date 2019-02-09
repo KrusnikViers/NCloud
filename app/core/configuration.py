@@ -10,11 +10,13 @@ _ROOT_DIR = pathlib.Path(os.path.realpath(__file__)).parent.parent.parent
 class Configuration:
     def __init__(self):
         self._data = {}
+        self.is_debug = False
 
     @classmethod
     def load(cls):
         instance = Configuration()
         args, overrides = cls._get_command_line_arguments()
+        instance.is_debug = args.is_debug
         file_location_path = pathlib.Path(args.configuration_file)
         if file_location_path.is_file():
             with file_location_path.open() as configuration_file:
@@ -34,6 +36,7 @@ class Configuration:
         parser = argparse.ArgumentParser()
         parser.add_argument('--configuration-file', '-c', type=str, default=str(_ROOT_DIR) + '/configuration.json',
                             dest='configuration_file', help='Json-formatted file with configuration.')
+        parser.add_argument('--debug', action='store_true', dest='is_debug', help='Show debug output.')
         return parser.parse_known_args()
 
     def _get_dict_and_key_name(self, full_path: str) -> (dict, str):
