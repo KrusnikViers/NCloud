@@ -1,13 +1,14 @@
 {
-    "location": {
-        "lat": 1.2345,
-        "lon": 6.789,
-        "ipinfo_token": "your_token_from_ipinfo.io"
+    "sun": {
+      "lat": 1.2345,
+      "lon": 6.789,
+      "ipinfo_token": "your_token_from_ipinfo.io"
     },
-    "email": {
-        "imap_server": "imap.example.com",
-        "login": "email@example.com",
-        "password": "password",
-        "update_period_seconds": 60
+    "1": {
+      "type": "email",
+      "imap_server": "imap.example.com",
+      "login": "email@example.com",
+      "password": "password",
+      "update_period_seconds": 60
     }
 }

@@ -11,15 +11,12 @@ class Subprocess:
     def _get_process_info(self):
         # Should be overriden in derivative class with this information:
         # { 'name': 'informer name',
-        #   'is_enabled': True or False,
-        #   'target': Process target function, if enabled
-        #   'args': Target function arguments, if enabled }
+        #   'target': Process target function
+        #   'args': Target function arguments }
         assert False
 
     def start(self):
         info = self._get_process_info()
-        if not info['is_enabled']:
-            return
         self._process = multiprocessing.Process(target=info['target'], name=info['name'], args=info['args'])
         self._process.daemon = True
         self._process.start()

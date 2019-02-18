@@ -4,9 +4,10 @@ import queue
 import signal
 
 from app.core.configuration import Configuration
-from app.core.display.cloud_display import CloudDisplay
+from app.display.interface import Interface
 from app.core.notifications import Notification
-from app.informers.email import EmailInformer
+
+from app.informers import email
 
 
 class Application:
@@ -34,44 +35,36 @@ class Application:
         self.queue = mp_manager.Queue()
 
         # Informers
-        self.informers = {
-            'email': EmailInformer(self.configuration, self.queue)
-        }
-
-        # Handlers
-        self.handlers = {
-            Notification.EMAIL: self._on_email_notification,
-        }
+        self.informers = list
 
     def run(self):
         logging.info('Application start')
 
         logging.info('Launching informers...')
-        for informer in self.informers.values():
-            informer.start()
 
         logging.info('Launching main cycle...')
-        with CloudDisplay() as display:
+        with Interface() as display:
             self.display = display
-            self.main_cycle()
+            self._main_cycle()
 
         logging.info('Terminating informers...')
         for informer in self.informers.values():
             informer.terminate()
         logging.info('Application shutdown')
 
-    def main_cycle(self):
+    def _main_cycle(self):
+        handlers = {
+            Notification.EMAIL: self.display.update_email_count,
+        }
+
         while True:
             try:
                 notification = self.queue.get(timeout=self.LOOP_PERIOD_SECONDS)
-                self.handlers[notification.type](notification)
+                handlers[notification.type](notification)
             except queue.Empty:
                 pass
             if self.was_interrupted:
                 break
-
-    def _on_email_notification(self, notification: Notification):
-        self.display.set(CloudDisplay.EMAIL_CHANNEL, notification.params.get('unread', 0) != 0)
 
     def _set_exit_flag(self, *args):
         self.was_interrupted = True

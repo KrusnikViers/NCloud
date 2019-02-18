@@ -7,6 +7,7 @@ import pathlib
 _ROOT_DIR = pathlib.Path(os.path.realpath(__file__)).parent.parent.parent
 
 
+# TODO: Simplify.
 class Configuration:
     def __init__(self):
         self._data = {}
